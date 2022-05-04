@@ -29,6 +29,10 @@ inputs:
     description: 'Dockerfile destination'
     required: false
     default: 'Dockerfile'
+  repository:
+    description: 'Repository url'
+    required: true
+    default: ''
 branding:
   color: 'green'
 runs:
@@ -38,23 +42,23 @@ runs:
     - name: Login to Artifactory
       uses: docker/login-action@v1 
       with:
-        registry: artifactory.internal.sysdig.com
+        registry: ${{ inputs.repository }}
         username: ${{ inputs.artifactory_username }}
         password: ${{ inputs.artifactory_token }}
     - name: Build image
       shell: bash
       run: |
-        docker build --label release=${{ inputs.tag_name }} -f ${{ inputs.dockerfile }} --target ${{ inputs.target }} -t artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest .
+        docker build --label release=${{ inputs.tag_name }} -f ${{ inputs.dockerfile }} --target ${{ inputs.target }} -t ${{ inputs.repository }}/${{ inputs.exporter }}:latest .
     - name: Publish docker image
       if: ${{ inputs.target }} == 'ubi'
       shell: bash
       run: |
-        docker tag artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest artifactory.internal.sysdig.com/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
-        docker push artifactory.internal.sysdig.com/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
     - name: Publish docker image
       if: ${{ inputs.target }} != 'ubi'
       shell: bash
       run: |
-        docker tag artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest artifactory.internal.sysdig.com/${{ inputs.exporter }}:${{ inputs.tag_name }}
-        docker push artifactory.internal.sysdig.com/${{ inputs.exporter }}:${{ inputs.tag_name }}
-        docker push artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest
+        docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
+        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
+        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:latest
