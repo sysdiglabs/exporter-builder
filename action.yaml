@@ -55,10 +55,10 @@ runs:
       run: |
         docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
         docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:latest
     - name: Publish docker image
       if: ${{ inputs.target }} != 'ubi'
       shell: bash
       run: |
         docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
         docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
-        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:latest
