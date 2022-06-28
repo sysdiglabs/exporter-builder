@@ -50,7 +50,28 @@ runs:
     - name: Build image
       shell: bash
       run: |
-        docker build --label release=${{ inputs.tag_name }} -f ${{ inputs.dockerfile }} --target ${{ inputs.target }} -t ${{ inputs.repository }}/${{ inputs.exporter }}:latest .
+        docker build --label release=${{ inputs.tag_name }} -f ${{ inputs.dockerfile }} --target ${{ inputs.target }} -t ${{ inputs.exporter }}:latest .
+        docket tag ${{ inputs.exporter }}:latest artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest
+    - name: Scan local image
+      id: scan-local
+      uses: sysdiglabs/scan-action@v3
+      with:
+        image-tag: ${{ inputs.exporter }}
+        sysdig-secure-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
+        ignore-failed-scan: true
+        input-type: docker-daemon
+        run-as-user: root
+    - name: Sarif report
+      uses: github/codeql-action/upload-sarif@v1  
+      if: always()
+      with:
+        sarif_file: ${{ steps.scan-local.outputs.sarifReport }}
+    - name: Publish docker image
+      if: ${{ inputs.target }} == 'ubi'
+      shell: bash
+      run: |
+        docker tag artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest artifactory.internal.sysdig.com/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker push artifactory.internal.sysdig.com/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
     - name: Publish docker image
       if: ${{ inputs.target }} == 'ubi'
       shell: bash
