@@ -51,7 +51,7 @@ runs:
       shell: bash
       run: |
         docker build --label release=${{ inputs.tag_name }} -f ${{ inputs.dockerfile }} --target ${{ inputs.target }} -t ${{ inputs.exporter }}:latest .
-        docket tag ${{ inputs.exporter }}:latest artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest
+        docker tag ${{ inputs.exporter }}:latest artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest
     - name: Scan local image
       id: scan-local
       uses: sysdiglabs/scan-action@v3
