@@ -61,11 +61,6 @@ runs:
         ignore-failed-scan: true
         input-type: docker-daemon
         run-as-user: root
-    - name: Sarif report
-      uses: github/codeql-action/upload-sarif@v1  
-      if: always()
-      with:
-        sarif_file: ${{ steps.scan-local.outputs.sarifReport }}
     - name: Publish docker image
       if: ${{ inputs.target }} == 'ubi'
       shell: bash
