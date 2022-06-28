@@ -57,7 +57,7 @@ runs:
       uses: sysdiglabs/scan-action@v3
       with:
         image-tag: ${{ inputs.exporter }}
-        sysdig-secure-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
+        sysdig-secure-token: ${{ inputs.sysdig_secure_token }}
         ignore-failed-scan: true
         input-type: docker-daemon
         run-as-user: root
