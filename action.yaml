@@ -66,12 +66,13 @@ runs:
       shell: bash
       run: |
         docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
         docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
         docker push ${{ inputs.repository }}/${{ inputs.exporter }}:latest
+        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
     - name: Publish docker scratch image
       if: ${{ inputs.target }} != 'ubi'
       shell: bash
       run: |
         docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
         docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
-        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
