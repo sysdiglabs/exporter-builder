@@ -61,22 +61,17 @@ runs:
         ignore-failed-scan: true
         input-type: docker-daemon
         run-as-user: root
-    - name: Publish docker image
-      if: ${{ inputs.target }} == 'ubi'
-      shell: bash
-      run: |
-        docker tag artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest artifactory.internal.sysdig.com/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
-        docker push artifactory.internal.sysdig.com/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
-    - name: Publish docker image
+    - name: Publish docker ubi image as ubi and as latest
       if: ${{ inputs.target }} == 'ubi'
       shell: bash
       run: |
         docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
         docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
         docker push ${{ inputs.repository }}/${{ inputs.exporter }}:latest
-    - name: Publish docker image
+    - name: Publish docker scratch image
       if: ${{ inputs.target }} != 'ubi'
       shell: bash
       run: |
-        docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
+        docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
         docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
