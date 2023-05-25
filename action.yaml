@@ -33,6 +33,10 @@ inputs:
     description: 'Repository url'
     required: true
     default: ''
+  repository_folder:
+    description: 'Repository folder where it goes the image'
+    required: false
+    default: 'sysdig-artifact-registry-dev/gar-docker/monitor/exporters'
 branding:
   color: 'green'
 runs:
@@ -51,7 +55,7 @@ runs:
       shell: bash
       run: |
         docker build --label release=${{ inputs.tag_name }} -f ${{ inputs.dockerfile }} --target ${{ inputs.target }} -t ${{ inputs.exporter }}:latest .
-        docker tag ${{ inputs.exporter }}:latest artifactory.internal.sysdig.com/${{ inputs.exporter }}:latest
+        docker tag ${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:latest
     - name: Scan local image
       id: scan-local
       uses: sysdiglabs/scan-action@v3
@@ -65,14 +69,14 @@ runs:
       if: ${{ inputs.target }} == 'ubi'
       shell: bash
       run: |
-        docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
-        docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
-        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
-        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:latest
-        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
+        docker tag ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker tag ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
+        docker push ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker push ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:latest
+        docker push ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:${{ inputs.tag_name }}
     - name: Publish docker scratch image
       if: ${{ inputs.target }} != 'ubi'
       shell: bash
       run: |
-        docker tag ${{ inputs.repository }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
-        docker push ${{ inputs.repository }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker tag ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
+        docker push ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:${{ inputs.tag_name }}-${{ inputs.target }}
