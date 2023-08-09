@@ -46,7 +46,7 @@ runs:
       with:
         submodules: recursive
     - name: Login to Artifactory
-      uses: docker/login-action@v1 
+      uses: docker/login-action@v2 
       with:
         registry: ${{ inputs.repository }}
         username: ${{ inputs.artifactory_username }}
