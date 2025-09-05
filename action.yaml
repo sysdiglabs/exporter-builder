@@ -1,6 +1,6 @@
 name: 'Build exporter'
 description: 'Build and release an exporter'
-inputs: 
+inputs:
   exporter:
     description: 'Exporter name'
     required: true
@@ -46,7 +46,7 @@ runs:
       with:
         submodules: recursive
     - name: Login to Artifactory
-      uses: docker/login-action@v2 
+      uses: docker/login-action@v2
       with:
         registry: ${{ inputs.repository }}
         username: ${{ inputs.artifactory_username }}
@@ -58,7 +58,7 @@ runs:
         docker tag ${{ inputs.exporter }}:latest ${{ inputs.repository }}/${{ inputs.repository_folder }}/${{ inputs.exporter }}:latest
     - name: Scan local image
       id: scan-local
-      uses: sysdiglabs/scan-action@v3
+      uses: sysdiglabs/scan-action@v6
       with:
         image-tag: ${{ inputs.exporter }}
         sysdig-secure-token: ${{ inputs.sysdig_secure_token }}
